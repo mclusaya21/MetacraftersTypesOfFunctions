@@ -12,7 +12,7 @@ pragma solidity ^0.8.0;
 
 contract MintToken {
     string public name = "MintToken";
-    string public tokenAbbrv = "MTK";
+    string public tokenAbbrv = "MT";
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
@@ -67,6 +67,7 @@ contract MintToken {
         return true;
     }
 }
+
 
 # Author
 Lusaya, Maria Carmela J.
