@@ -10,9 +10,9 @@ To run this code go to https://remix.ethereum.org/. Create a new file and (examp
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract MyToken {
-    string public name = "MyToken";
-    string public symbol = "MTK";
+contract MintToken {
+    string public name = "MintToken";
+    string public tokenAbbrv = "MTK";
     uint8 public decimals = 18;
     uint256 public totalSupply;
 
@@ -25,7 +25,7 @@ contract MyToken {
     address public owner;
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
+        require(msg.sender == owner, "Only owner can mint");
         _;
     }
 
