@@ -58,3 +58,4 @@ contract MintToken {
         return true;
     }
 }
+
