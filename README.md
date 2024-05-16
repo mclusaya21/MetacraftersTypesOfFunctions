@@ -10,60 +10,33 @@ To run this code go to https://remix.ethereum.org/. Create a new file and (examp
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract MintToken {
-    string public name = "MintToken";
-    string public tokenAbbrv = "MT";
-    uint8 public decimals = 18;
-    uint256 public totalSupply;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-    mapping(address => uint256) public balanceOf;
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Mint(address indexed to, uint256 value);
-    event Burn(address indexed from, uint256 value);
-
-    address public owner;
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can mint");
-        _;
+//ERC20 Token with mint, burn, and transfer functions
+contract MintToken is ERC20, Ownable {
+    constructor(address initialOwner) ERC20("MintToken", "MT") Ownable(initialOwner) {
+        _mint(msg.sender, 1000000 * 10 ** uint(decimals()));
     }
 
-    constructor(uint256 _initialSupply) {
-        totalSupply = _initialSupply * 5 ** uint256(decimals);
-        balanceOf[msg.sender] = totalSupply;
-        owner = msg.sender;
+//Mint function - to mint new tokens (only owner can use this function)
+    function mint(address account, uint256 amount) public {
+        require(msg.sender == owner(), "Only owner can mint new tokens");
+        _mint(account, amount);
     }
-
-    function mint(address _to, uint256 _value) public onlyOwner {
-        require(_to != address(0), "Invalid recipient address");
-
-        balanceOf[_to] += _value;
-        totalSupply += _value;
-
-        emit Mint(_to, _value);
-        emit Transfer(address(0), _to, _value);
+//Burn function - to burn tokens
+    function burn(uint256 amount) public {
+        _burn(msg.sender, amount);
     }
-
-    function burn(uint256 _value) public {
-        require(balanceOf[msg.sender] >= _value, "Insufficient balance");
-
-        balanceOf[msg.sender] -= _value;
-        totalSupply -= _value;
-
-        emit Burn(msg.sender, _value);
-        emit Transfer(msg.sender, address(0), _value);
+//Transfer function- to transfer token (sender to recepient)
+    function transfer(address recipient, uint256 amount) public override returns (bool) {
+        _transfer(msg.sender, recipient, amount);
+        return true;
     }
-
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        require(_to != address(0), "Invalid recipient address");
-        require(_value > 0, "Transfer must be greater than 0");
-        require(balanceOf[msg.sender] >= _value, "Insufficient balance");
-
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
-
-        emit Transfer(msg.sender, _to, _value);
+//Transfer tokens with approval from sender
+    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
+        _transfer(sender, recipient, amount);
+        _approve(sender, msg.sender, allowance(sender, msg.sender) - amount);
         return true;
     }
 }
